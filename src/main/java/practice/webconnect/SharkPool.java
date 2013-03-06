@@ -9,7 +9,7 @@ public class SharkPool {
 		// Start Context
 		ApplicationContext ac = new ClassPathXmlApplicationContext("practice/webconnect/shark-context.xml");
 		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) ac.getBean("taskExecutor");
-		for(int i = 0; i < 15; i++) {
+		for(int i = 0; i < 30; i++) {
 			SharkThread shark = ac.getBean(SharkThread.class);
 			shark.setRequestString("shark number" + i);
 			//shark.setSleepTime(((i+2) % 7) * 1000);
@@ -25,7 +25,7 @@ public class SharkPool {
 				break;
 			}
 			try {
-				Thread.sleep(7000);
+				Thread.sleep(55000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

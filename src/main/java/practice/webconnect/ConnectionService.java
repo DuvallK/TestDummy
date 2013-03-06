@@ -37,6 +37,7 @@ public class ConnectionService {
 	    conn.setDoOutput(true); // Triggers POST.
 	    conn.setRequestProperty("accept-charset", "UTF-8");
 	    conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+	    
 	    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
 	    wr.write(query);
 	    wr.flush();

@@ -16,7 +16,7 @@ public class SharkThread extends Thread {
 	private ConnectionService webService;
 	
 	private String requestString;
-	private int sleepTime = 5000;	// 5 seconds default
+	private int sleepTime = 1000;
 	public int getSleepTime() {
 		return sleepTime;
 	}
@@ -25,7 +25,7 @@ public class SharkThread extends Thread {
 		this.sleepTime = sleepTime;
 	}
 
-	private final int numRequests = 30;
+	private final int timeLimit = 6 * 60 * 1000;	// 6 minutes
 	
 	private String reverse(String s) {
 		return new StringBuilder(s).reverse().toString();
@@ -37,7 +37,9 @@ public class SharkThread extends Thread {
 		if(webService == null)
 			log.error("Wiring failed");
 		
-		for(int i = 0; i < numRequests; i++) {
+		long startTime = System.currentTimeMillis();
+		
+		do {
 			try {
 				String s = webService.sendSynchronousRequest(requestString);
 				if(!s.equals(reverse(requestString))) {
@@ -51,7 +53,7 @@ public class SharkThread extends Thread {
 			} catch (IOException e) {
 				log.error(e.getMessage());
 			}
-		}
+		} while (System.currentTimeMillis() < startTime + timeLimit);
 		
 	}
 
