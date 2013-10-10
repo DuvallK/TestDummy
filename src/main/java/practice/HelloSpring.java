@@ -2,19 +2,24 @@ package practice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public class HelloSpring {
 	// Add logger for debug purposes
 	private final static Logger logger = LoggerFactory.getLogger(HelloSpring.class);
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		System.out.println("Spring 3.0 Concept testing");
 		logger.info("Starting Spring context...");
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("practice/applicationContext.xml");
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext();
+		context.getEnvironment().addActiveProfile("creeper");
+		context.setConfigLocation("practice/applicationContext.xml");
+		context.refresh();
 		printBreak(false);
 		System.out.println("Testing Prototype Scope");
 		JumpingBean jb = getJumpingBean(context);
@@ -27,8 +32,12 @@ public class HelloSpring {
 		((Legume)context.getBean("primaryLegume")).printData();
 		
 		getJumpingBean(context).printData();
+		printBreak(true);
 		
-		printBreak(false);
+		ExplodingBean creeper = getExplodingBean(context);
+		if(creeper != null) creeper.printData(); else System.out.println("No creepers!");
+		
+		printBreak(true);
 		System.out.println("Testing thread pooling");
 		ThreadPoolTaskExecutor taskExecutor = (ThreadPoolTaskExecutor) context.getBean("taskExecutor");
 		for(int i = 0; i < 5; i++) {
@@ -79,6 +88,21 @@ public class HelloSpring {
 		logger.info("Grabbing JumpingBean instance...");
 		JumpingBean jb = (JumpingBean)context.getBean(JumpingBean.class);
 		return jb;
+	}
+	
+	private static ExplodingBean getExplodingBean(ClassPathXmlApplicationContext context) {
+		logger.info("Grabbing ExplodingBean instance...");
+		System.out.print("Profiles: ");
+		for(String profile : context.getEnvironment().getActiveProfiles())
+			System.out.print(profile + ",");
+		System.out.println();
+		try {
+			return (ExplodingBean) context.getBean(ExplodingBean.class);
+		} catch (BeansException e) {
+			logger.error("No exploding beans! Profile's not active!");
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
